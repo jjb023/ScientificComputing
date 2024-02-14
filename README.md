@@ -1,1 +1,1 @@
-# ScientificComputing
+# ScientificComputing - Josh Beal

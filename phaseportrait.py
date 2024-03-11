@@ -26,3 +26,4 @@ def equilibrium(ode, initialu):
     else:
         return nan
     # TODO: Error message?
+

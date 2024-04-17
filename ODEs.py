@@ -52,6 +52,9 @@ def rk4_step(f, x0, t0, dt):
     t1 : float 
         The time after a single RK4 step.
     """
+
+    # print(f"RK4 input x0: {x0}, type: {type(x0)}")  # Debugging output
+
     # intermediate values of k1, k2, k3, k4
     k1 = f(x0, t0)
     k2 = f(x0 + 0.5 * dt * k1, t0 + 0.5 * dt)
@@ -65,7 +68,7 @@ def rk4_step(f, x0, t0, dt):
 
 
 # Solve to a given time using either method.
-def solve_to(f, x0, t0, dt, method='Euler'):
+def solve_to(f, x0, t0, dt, tmax, method='Euler'):
     """
     Solve an ODE to a given time using either Euler or RK4 method.
 
@@ -79,6 +82,8 @@ def solve_to(f, x0, t0, dt, method='Euler'):
         The initial time.
     dt : float
         The time step size.
+    tmax : float
+        The final time.
     method : string
         The method to use, either 'Euler' or 'RK4'.
 
@@ -92,7 +97,7 @@ def solve_to(f, x0, t0, dt, method='Euler'):
     # Euler method
     if method == 'Euler':
         x, t = x0, t0
-        while t < dt:
+        while t < tmax:
             x, t = euler_step(f, x, t, dt)
         return x, t
     # RK4 method
@@ -106,7 +111,7 @@ def solve_to(f, x0, t0, dt, method='Euler'):
         return None
     
 # Solve an ODE or system of ODEs using either method using the solve_to function.
-def solve_ode(f, x0, t0, dt, tmax, method='Euler'):
+def solve_ode(f, x0, t0, dt, tmax, method='Euler', args=()):
     """
     Solve an ODE system using either Euler or RK4 method.
 
@@ -132,29 +137,26 @@ def solve_ode(f, x0, t0, dt, tmax, method='Euler'):
     t : array
         The time after each time step.
     """
-    # Euler method
-    if method == 'Euler':
-        x, t = x0, t0
-        xvals = [x0]
-        tvals = [t0]
-        while t < tmax:
-            x, t = euler_step(f, x, t, dt)
-            xvals.append(x)
-            tvals.append(t)
-        return xvals, tvals
-    # RK4 method
-    elif method == 'RK4':
-        x, t = x0, t0
-        xvals = [x0]
-        tvals = [t0]
-        while t < tmax:
-            x, t = rk4_step(f, x, t, dt)
-            xvals.append(x)
-            tvals.append(t)
-        return xvals, tvals
-    else:
-        print('Invalid method')
-        return None
+    
+    methods = {"Euler": euler_step, 'RK4': rk4_step}
+    step_function = methods.get(method)
+    if step_function is None:
+        raise ValueError(f"Invalid method specified: {method}. Available methods are 'Euler' or 'RK4'")
+
+
+    x, t = x0, t0
+    xvals = [x0]
+    tvals = [t0]
+
+    while t < tmax:
+        next_t = min(t + dt, tmax)
+        actual_dt = next_t - t
+        x, t = step_function(f, x, t, actual_dt)
+        xvals.append(x)
+        tvals.append(t)
+    return xvals, tvals
+
+
 
 
 

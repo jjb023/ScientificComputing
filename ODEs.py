@@ -1,4 +1,4 @@
-import numpy as py
+import numpy as np
 import math
 import matplotlib.pyplot as plt
 
@@ -140,9 +140,12 @@ def solve_ode(f, x0, t0, dt, tmax, method='Euler', args=()):
     
     methods = {"Euler": euler_step, 'RK4': rk4_step}
     step_function = methods.get(method)
+
     if step_function is None:
         raise ValueError(f"Invalid method specified: {method}. Available methods are 'Euler' or 'RK4'")
 
+    if not isinstance(x0, (int, float, np.ndarray)):
+        raise TypeError(f"x0 must be an int, float, or numpy array, not {type(x0)}")
 
     x, t = x0, t0
     xvals = [x0]
@@ -158,5 +161,28 @@ def solve_ode(f, x0, t0, dt, tmax, method='Euler', args=()):
 
 
 
+def test():
+    def simple_ode(x, t):
+        return -x
+    
+    x0 = 1.0  # Correct initial condition
+    try:
+        solve_ode(simple_ode, x0, 0, 0.01, 1, 'RK4')
+    except Exception as e:
+        print(f"Error: {e}")
+    
+    x0 = "wrong type"  # Incorrect initial condition
+    try:
+        solve_ode(simple_ode, x0, 0, 0.01, 1, 'RK4')
+    except Exception as e:
+        print(f"Error: {e}")
+    
+    method = "Unknown Method"  # Incorrect method
+    try:
+        solve_ode(simple_ode, 1.0, 0, 0.01, 1, method)
+    except Exception as e:
+        print(f"Error: {e}")
 
+if __name__ == "__main__":
+    test()
 

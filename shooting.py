@@ -27,6 +27,7 @@ def shooting(function, phase_condition):
     
     def shooting_func(initial_conditions, params):
         u0, T = np.atleast_1d(initial_conditions[:-1], initial_conditions[-1])
+        print(f"Shooting func - u0: {u0}, T: {T}, params: {params}")
         sol, t = solve_ode(function, u0, 0, T/1000, T, 'RK4', params=params)
         residuals = np.append(u0 - sol[-1], phase_condition(sol[-1], u0, *params))
         return residuals
@@ -37,6 +38,8 @@ def shooting(function, phase_condition):
 if __name__ == "__main__":
     params = (1.0, 0.2, 0.1)  # Example parameters: a, b, d
     initial_guess = [0.5, 0.5, 2*np.pi]  # Initial state for x, y, and guessed period
+    initial_guess = np.array(initial_guess)  # Optionally convert to numpy array for consistency
+
 
     # Create the shooting function using the predator-prey model
     shoot_func = shooting(predator_prey, phase_condition)

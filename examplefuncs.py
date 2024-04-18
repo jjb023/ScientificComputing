@@ -20,12 +20,17 @@ def predator_prey(X, t, params):
     dXdt : array
         The time derivative of the predator-prey system.
     """
-    a, b, d = params
+    print(f"Received X: {X}, type: {type(X)}")
+    if not isinstance(X, (list, tuple, np.ndarray)):
+        raise TypeError("X must be a list, tuple, or numpy array")
     x, y = X
-
+    a, b, d = params
     dxdt = x*(1-x) - (a*x*y) / (d+x)
     dydt = b*y*(1-(y/x))
     return np.array([dxdt, dydt])
+
+
+
 
 def phase_condition(X0, **params):
     """

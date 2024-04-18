@@ -31,41 +31,18 @@ def euler_step(f, x0, t0, dt, params):
     return x1, t1
 
 # RK4 Method
-def rk4_step(f, x0, t0, dt, *params):
-    """
-    Perform a single RK4 step.
-
-    Parameters
-    ----------
-    f : function
-        The function representing the ODE system.
-    x : array
-        The current state of the system.
-    t : float
-        The current time.
-    dt : float
-        The time step size.
-    
-    Returns:
-    ----------
-    x1 : array
-        The state of the system after a single RK4 step.
-    t1 : float 
-        The time after a single RK4 step.
-    """
+def rk4_step(f, x0, t0, dt, params):
+    print(f"rk4_step start - x0: {x0}, type: {type(x0)}")
+    k1 = f(t0, x0, params)
+    k2 = f(t0 + 0.5*dt, x0 + 0.5*dt*k1, params)
+    k3 = f(t0 + 0.5*dt, x0 + 0.5*dt*k2, params)
+    k4 = f(t0 + dt, x0 + dt*k3, params)
+    x1 = x0 + dt/6 * (k1 + 2*k2 + 2*k3 + k4)
+    return np.atleast_1d(x1), t0 + dt
 
 
 
-    # intermediate values of k1, k2, k3, k4
-    k1 = f(x0, t0, *params)
-    k2 = f(x0 + 0.5 * dt * k1, t0 + 0.5 * dt, *params)
-    k3 = f(x0 + 0.5 * dt * k2, t0 + 0.5 * dt, *params)
-    k4 = f(x0 + dt * k3, t0 + dt, *params)
-    # final value of x1, t1
-    k = 1/6 * dt * (k1 + 2*k2 + 2*k3 + k4)
-    x1 = x0 + k
-    t1 = t0 + dt
-    return x1, t1
+
 
 
 # Solve to a given time using either method.
@@ -115,6 +92,7 @@ def solve_to(f, x0, t0, dt, tmax, method='Euler'):
 def solve_ode(f, x0, t0, dt, tmax, method='RK4', params=()):
     x, t = np.atleast_1d(x0), t0
     xvals, tvals = [x.copy()], [t]
+    print(f"Initial x in solve_ode: {x}, type: {type(x)}")
 
     step_function = rk4_step if method == 'RK4' else euler_step
     while t < tmax:
@@ -130,6 +108,9 @@ def solve_ode(f, x0, t0, dt, tmax, method='RK4', params=()):
     except ValueError as e:
         print(f"Error in stacking xvals: {e}")
         print(f"Shapes of xvals: {[xi.shape for xi in xvals]}")
+        print(f"Shape of x at time {t}: {x.shape}")
+        xvals.append(x.copy())  # Make sure x is copied if it's modified in-place elsewhere
+
         raise
 
     return xvals, np.array(tvals)

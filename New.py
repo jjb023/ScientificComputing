@@ -37,6 +37,9 @@ def solve_ode(f, y0, t0, dt, tmax, method, **kwargs):
     else:
         raise ValueError("Invalid method. Choose 'RK4'.")
 
+# Define a phase condition for the shooting method
+def phase_condition(y_final, y_initial, *params):
+    return y_final[0] - y_initial[0]
 
 # Define the shooting method
 def shooting(function, phase_condition):
@@ -47,9 +50,6 @@ def shooting(function, phase_condition):
         return residuals
     return shooting_func
 
-# Define a phase condition for the shooting method
-def phase_condition(y_final, y_initial, *params):
-    return y_final[0] - y_initial[0]
 
 # Main function to setup and solve the boundary value problem
 def main():

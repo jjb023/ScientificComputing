@@ -31,7 +31,7 @@ def euler_step(f, x0, t0, dt, params):
     return x1, t1
 
 # RK4 Method
-def rk4_step(f, x0, t0, dt, params):
+def rk4_step(f, x0, t0, dt, *params):
     """
     Perform a single RK4 step.
 
@@ -54,7 +54,7 @@ def rk4_step(f, x0, t0, dt, params):
         The time after a single RK4 step.
     """
 
-    # print(f"RK4 input x0: {x0}, type: {type(x0)}")  # Debugging output
+
 
     # intermediate values of k1, k2, k3, k4
     k1 = f(x0, t0, *params)
@@ -121,10 +121,19 @@ def solve_ode(f, x0, t0, dt, tmax, method='RK4', params=()):
         next_t = min(t + dt, tmax)
         actual_dt = next_t - t
         x, t = step_function(f, x, t, actual_dt, params)
-        xvals.append(x.copy())
+        xvals.append(x.copy())  # Ensure x is copied and correctly formatted as an array
         tvals.append(t)
 
-    return np.array(xvals), np.array(tvals)
+    # Attempt to create a consistent structured array
+    try:
+        xvals = np.vstack(xvals)  # This stacks the input arrays vertically (row wise)
+    except ValueError as e:
+        print(f"Error in stacking xvals: {e}")
+        print(f"Shapes of xvals: {[xi.shape for xi in xvals]}")
+        raise
+
+    return xvals, np.array(tvals)
+
 
 
 

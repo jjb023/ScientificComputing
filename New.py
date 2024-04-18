@@ -10,7 +10,8 @@ def predator_prey(X, t, params):
     a, b, d = params
     dxdt = x*(1-x) - (a*x*y) / (d+x)
     dydt = b*y*(1-(y/x))
-    return np.array([dxdt, dydt])
+    X = np.array([dxdt, dydt])
+    return X
 
 def phase_condition(X0, **params):
     dxdt = predator_prey(X0, 0, params)

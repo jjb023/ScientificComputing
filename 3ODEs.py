@@ -29,7 +29,11 @@ def euler_step(f, x0, t0, maxstep, *params):
         The time after a single Euler step.
         """
     
-    check_ode_inputs(f, x0, maxstep, *params)
+    checkf(f)
+    checkx0(x0)
+    checkt0(t0)
+    checkmaxstep(maxstep)
+    checkparams(params)
     
     x1 = x0 + maxstep * f(x0, t0, *params)
     t1 = t0 + maxstep
@@ -61,7 +65,11 @@ def RK4_step(f, x0, t0, maxstep, *params):
         The time after a single RK4 step.
         """
     
-    check_ode_inputs(f, x0, maxstep, *params)
+    checkf(f)
+    checkx0(x0)
+    checkt0(t0)
+    checkmaxstep(maxstep)
+    checkparams(params)
     
     k1 = f(t0, x0, *params)
     k2 = f(t0 + 0.5*maxstep, x0 + 0.5*maxstep*k1, *params)
@@ -100,7 +108,12 @@ def solve_to(f, x0, t0, maxstep, tmax, method='Euler', *params):
         The time at each time step.
         """
     
-    check_ode_inputs(f, x0, maxstep, *params)
+    checkf(f)
+    checkx0(x0)
+    checkt0(t0)
+    checkmaxstep(maxstep)
+    checktmax(tmax)
+    checkmethod(method)
     
     xvals = [x0]
     tvals = [t0]

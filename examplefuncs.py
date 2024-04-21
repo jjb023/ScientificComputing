@@ -1,7 +1,5 @@
 import numpy as np
 
-
-# Predator Prey Equations
 def predator_prey(X, t, params):
     """
     Compute the time derivative of the predator-prey system.
@@ -9,26 +7,30 @@ def predator_prey(X, t, params):
     Parameters
     ----------
     X : array
-        Initial conditions.
+        State vector [prey population, predator population].
     t : float
-        The evaluation time.
+        The evaluation time (not used in this function but included for compatibility).
     params : tuple
-        The parameters of the predator-prey system.
+        The parameters of the predator-prey system (intrinsic growth rate of prey,
+        predation rate constant, predator efficiency, intrinsic death rate of predators).
         
     Returns
     -------
     dXdt : array
         The time derivative of the predator-prey system.
     """
-    print(f"Received X: {X}, type: {type(X)}")
+    
     if not isinstance(X, (list, tuple, np.ndarray)):
         raise TypeError("X must be a list, tuple, or numpy array")
-    x = X[0]
-    y = X[1]
-    a, b, d = params
-    dxdt = x*(1-x) - (a*x*y) / (d+x)
-    dydt = b*y*(1-(y/x))
+    
+    x, y = X  # Prey population, Predator population
+    a, b, d = params  # Unpack parameters
+    
+    dxdt = x * (1 - x) - (a * x * y) / (d + x)  # Change in prey population
+    dydt = b * y * (1 - (y / x))  # Change in predator population
+    
     return np.array([dxdt, dydt])
+
 
 
 
@@ -51,3 +53,6 @@ def phase_condition(X0, **params):
     """
     dxdt = predator_prey(X0, 0, params)
     return dxdt[0]
+
+def system_derivs(x, y):
+    return [y, -x]  # dx/dt = y, dy/dt = -x

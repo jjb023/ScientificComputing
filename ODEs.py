@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 # Euler Step Method
-def euler_step(f, x0, t0, dt, params):
+def euler_step(f, x, t, dt, **kwargs):
     """
     Perform a single Euler step.
 
@@ -26,8 +26,8 @@ def euler_step(f, x0, t0, dt, params):
     t1 : float
         The time after a single Euler step.
     """
-    x1 = x0 + dt * f(x0, t0, *params)
-    t1 = t0 + dt
+    x1 = x + dt * f(x, t, **kwargs)
+    t1 = t + dt
     return x1, t1
 
 # RK4 Method

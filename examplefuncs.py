@@ -1,5 +1,28 @@
 import numpy as np
 
+def fdot(x, t, *params):
+    # Single ODE
+    return np.array([x])
+
+def fdotsol(x, t):
+    # Solution to ODE
+    return np.exp(t)
+
+def fddot(u, t, *params):
+    # System of ODEs
+    x, y = u
+    dxdt = y
+    dydt = -x
+    dXdt = np.array([dxdt, dydt])
+    return dXdt
+
+def fddotsol(t):
+    # Solution to system of ODEs
+    x = np.cos(t) + np.sin(t)
+    y = np.cos(t) - np.sin(t)
+    return np.array([x, y])
+
+
 def predator_prey(X, t, params):
     """
     Compute the time derivative of the predator-prey system.

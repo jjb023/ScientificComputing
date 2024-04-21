@@ -1,105 +1,171 @@
 import numpy as np
 from scipy.integrate import solve_ivp
 from scipy.optimize import root
-from ODEs import solve_ode
+from finalODEs import solve_ode
 from scipy.optimize import fsolve  
 from examplefuncs import phase_condition, predator_prey
+import matplotlib.pyplot as plt
 
-
-def shooting(function, phase_condition):
+def phase_condition(f, u0, *params):
     """
-    Returns function for solving a BVP using shooting method.
+    Returns the phase condition for a ode system.
+    
+    Parameters
+    ----------
+    f : function
+        The function representing the ODE system.
+    u0 : array
+        Initial conditions (x0 and t values).
+    *params : array
+        Additional parameters for ODE.
+
+    Returns
+    -------
+    x0 : float
+        The new initial state of the system.
+    t : float
+        The new time.
+    pc : function
+        The phase condition for the ode system.
+    """
+
+    x0, t = u0[:-1], u0[-1]
+    pc = f(x0, t, *params)[0]
+
+    return x0, t, pc
+
+    
+
+
+def shooting(f):
+    """
+    Returns function to be solved using shooting method.
     
     Parameters
     ----------
     function : function
         The function representing the ODE system.
-    phase_condition : function
-        Phase condition for limit cycle.
-
+        
     Returns
     -------
     function
-        The function for solving a BVP using shooting method.
+        The function to be solved using shooting method.
+    """
+    def residuals(u0, phasecondition, *params):
         """
-    if not callable(function) or not callable(phase_condition):
-        raise ValueError("Both function and phase_cond must be callable functions")
+        Find and set up conditions that are solved for.
+        
+        Parameters
+        ----------
+        u0 : array
+            Initial conditions (x0 and t values).
+        phasecondition : function
+            Phase condition for limit cycle.
+        *params : array
+            Additional parameters for ODE.
+        
+        Returns
+        -------
+        residuals : array
+            Residuals of the initial conditions.
+        """
+        x0, t, pc = phasecondition(f, u0, *params)
+
+        solx, solt = solve_ode(f, x0, 0, t, 0.01, 'RK4', True, params=params)
+
+        period = []
+
+        for i in range(len(x0)):
+            period.append(x0[i] - solx[-1][i])
+
+        full_residuals = np.append(period, pc)
+
+        return full_residuals
     
-    def shooting_func(initial_conditions, params):
-        u0, T = np.atleast_1d(initial_conditions[:-1], initial_conditions[-1])
-        print(f"Shooting func - u0: {u0}, T: {T}, params: {params}")
-        sol, t = solve_ode(function, u0, 0, T/1000, T, 'RK4', params=params)
-        residuals = np.append(u0 - sol[-1], phase_condition(sol[-1], u0, *params))
-        return residuals
+    return residuals
+
+def orbit(f, u0, phasecondition, system, *params):
+    """
+    Solve and plot result of root finding problem.
+    
+    Parameters
+    ----------
+    f : function
+        The function representing the ODE system.
+    u0 : array
+        Initial conditions (x0 and t values).
+    phasecondition : function
+        Phase condition for limit cycle.
+    system : boolean
+        If the ODE is a system or not.
+    *params : array
+        Additional parameters for ODE.
+        
+    Returns
+    -------
+    sol : array
+        Solution of the BVP.
+    solt : array
+        Time value of the solution.
+    """
+    shootingsol = fsolve(shooting(f), u0, args=(phasecondition, *params), full_output=True)
+
+    solx, solt = solve_ode(f, shootingsol[0][:-1], 0, shootingsol[0][-1], 0.01, 'RK4', system, *params)
+
+    # plot
+    def plot(ax):
+        for i in range(len(solx[0])):
+            ax.plot(solt, solx[:, i], label=f"State {i}")
+            ax.set_title("Periodic Orbit Found Using Shooting Method for {f.__name__}")
+            ax.set_xlabel("Time")
+            ax.set_ylabel("dX/dt")
+            ax.legend()
+
+    if system:
+        fig, (ax1,ax2) = plt.subplots(2, 1, figsize=(12, 8))
+        ax2.plot(solx[:, 0], solx[:, 1])
+        ax2.set_title("Phase Plane Diagram")
+        ax2.set_xlabel("Prey Population")
+        ax2.set_ylabel("Predator Population")
+        ax2.grid(True)
+        plot(ax1)
+    else:
+        fig, ax = plt.subplots(1, 1, figsize=(12, 6))
+        plot(ax)
+
+    plt.show()
+
+    return solx, solt
+
+def main():
+    # Define the ODE system
+    f = predator_prey
+    # Initial conditions
+    x0 = np.array([0.2, 0.2])
+    # Phase condition
+    pc = phase_condition
+    # System
+    system = True
+    # Parameters
+    params = (1, 0.2, 0.1)
+
+    ppsol, ppsolt = solve_ode(f, x0, 0, 100, 0.01, 'RK4', system, params)
+
+    # Plotting the results
+    plt.figure(figsize=(12, 6))
+    plt.plot(ppsolt, ppsol[:, 0], label='Prey Population')
 
 
-    return shooting_func
-
-if __name__ == "__main__":
-    params = (1.0, 0.2, 0.1)  # Example parameters: a, b, d
-    initial_guess = [0.5, 0.5, 2*np.pi]  # Initial state for x, y, and guessed period
-    initial_guess = np.array(initial_guess)  # Optionally convert to numpy array for consistency
 
 
-    # Create the shooting function using the predator-prey model
-    shoot_func = shooting(predator_prey, phase_condition)
+    
+        
 
-    # Solve the BVP using fsolve
-    solution = fsolve(shoot_func, initial_guess, args=(params,))
-    print("Solution of the BVP:", solution)      
+   
         
         
 
 
-# def shooting(u0, function, phase_condition, args, method='RK4', tmax=25, dt=0.01):
-#     """
-#     Function to find limit cycles of specific ODEs using shooting method.
-    
-#     Parameters
-#     ----------
-#     u0 : array
-#         Initial guess for the solution.
-#     function : function
-#         The function representing the ODE system.    
-#     phase_condition : function
-#         Phase condition for limit cycle.
-#     args : tuple
-#         Additional arguments to pass to the function.
-#     method : string
-#         The method to use, either 'Euler' or 'RK4'.
-#     tmax : float
-#         The final time.
-#     dt : float
-#         The time step size.
-        
-#     Returns
-#     -------
-#     u : array
-#         The solution to the ODE system that meets the phase condition.
-#         """
-    
-#     # Check if u0 is an array-like object
-#     if not isinstance(u0, (list, np.ndarray)):
-#         raise ValueError("u0 must be an array-like object")
-
-#     # Check if u0 has at least two elements
-#     if len(u0) < 2:
-#         raise ValueError("u0 must have at least two elements")
-
-#     def objective(u0):
-#         # Solve ODE system
-#         u, t = solve_ode(function, u0, 0, dt, tmax, method=method)
-#         return phase_condition(u[-1], u0, *args)
-    
-#     # Find root of objective function
-#     result = root(objective, u0, method='hybr')
-
-#     if result.success:
-#         u, t = solve_ode(function, result.x, 0, dt, tmax, method)
-#         return u, t
-#     else:
-#         raise ValueError("Root finding didn't converge.")
-    
 
     
     

@@ -1,4 +1,7 @@
 import numpy as np
+from finalODEs import *
+
+
 
 
 def checkf(f):

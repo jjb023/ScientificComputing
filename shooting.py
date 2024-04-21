@@ -149,11 +149,25 @@ def main():
     # Parameters
     params = (1, 0.2, 0.1)
 
-    ppsol, ppsolt = solve_ode(f, x0, 0, 100, 0.01, 'RK4', system, params)
+    ppsolx, ppsolt = solve_ode(f, x0, 0, 100, 0.01, 'RK4', system, params)
 
     # Plotting the results
-    plt.figure(figsize=(12, 6))
-    plt.plot(ppsolt, ppsol[:, 0], label='Prey Population')
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10))
+    ax1.plot(ppsolt, ppsolx, label='Prey Population')
+    ax1.set_title("Predator-Prey Dynamics Over Time Using RK4")
+    ax1.set_xlabel("Time")
+    ax1.set_ylabel("Population")
+    ax1.legend()
+
+    ax2.plot(ppsolx[:, 0], ppsolx[:, 1])
+    ax2.set_title("Phase Plane Diagram")
+    ax2.set_xlabel("Prey Population")
+    ax2.set_ylabel("Predator Population")
+    ax2.grid(True)
+    plt.show()
+
+if __name__ == "__main__":
+    main()
 
 
 

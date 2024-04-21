@@ -4,6 +4,7 @@ from examplefuncs import *
 import matplotlib.pyplot as plt
 from inputchecks import *
 from ODEcheck import *
+from courseworkfuncs import *
 
 
 def euler_step(f, x0, t0, dt, *params):
@@ -133,7 +134,6 @@ def solve_ode(f, x0, t0, t1, dtmax, method, system, *params):
     T : float
         The final time.
     """
-    checkf(f)
 
 
 
@@ -162,6 +162,8 @@ def solve_ode(f, x0, t0, t1, dtmax, method, system, *params):
 
     return X, T
     
+
+
 
 def main():
     # Solve ODE using Euler and plot

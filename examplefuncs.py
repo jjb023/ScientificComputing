@@ -54,28 +54,3 @@ def predator_prey(X, t, params):
     
     return np.array([dxdt, dydt])
 
-
-
-
-
-def phase_condition(X0, **params):
-    """
-    Phase condition for the predator-prey system. dx/dt = 0 at t = 0.
-    
-    Parameters
-    ----------
-    X0 : array
-        Initial conditions.
-    params : dict
-        Additional parameters.
-        
-    Returns
-    -------
-    float
-        Gradient at t = 0.
-    """
-    dxdt = predator_prey(X0, 0, params)
-    return dxdt[0]
-
-def system_derivs(x, y):
-    return [y, -x]  # dx/dt = y, dy/dt = -x

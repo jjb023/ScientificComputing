@@ -23,7 +23,8 @@ def predator_prey(X, t, params):
     print(f"Received X: {X}, type: {type(X)}")
     if not isinstance(X, (list, tuple, np.ndarray)):
         raise TypeError("X must be a list, tuple, or numpy array")
-    x, y = X
+    x = X[0]
+    y = X[1]
     a, b, d = params
     dxdt = x*(1-x) - (a*x*y) / (d+x)
     dydt = b*y*(1-(y/x))

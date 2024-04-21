@@ -3,7 +3,7 @@ from scipy.integrate import solve_ivp
 from scipy.optimize import root
 from finalODEs import solve_ode
 from scipy.optimize import fsolve  
-from examplefuncs import phase_condition, predator_prey
+from examplefuncs import predator_prey
 import matplotlib.pyplot as plt
 
 def phase_condition(f, u0, *params):

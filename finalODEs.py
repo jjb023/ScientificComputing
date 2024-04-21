@@ -160,6 +160,9 @@ def solve_ode(f, x0, t0, t1, dtmax, method, system, *params):
         else:
             X[i+1] = solve_to(f, X[i], T[i], T[i+1], dtmax, method, *params)
 
+    if system:
+        X = X.transpose()
+        
     return X, T
     
 

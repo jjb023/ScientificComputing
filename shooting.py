@@ -6,6 +6,55 @@ from scipy.optimize import fsolve
 from examplefuncs import predator_prey
 import matplotlib.pyplot as plt
 
+def findroot(X0, *data):
+    T = X0[-1]
+    X = X0[:-1]
+    t = np.linspace(0, T, 100)
+    f, phase_condition, params = data if len(data) == 3 else data + (None,)
+    if params is not None:
+        solution = solve_ode('rk4', f, t, X0, **params)
+    else:
+        solution = solve_ode('rk4', f, t, X0)
+
+    if params is not None:
+        output = np.append(X0 - solution[-1, :], phase_condition(X0, **params))
+    else:
+        output = np.append(X0 - solution[-1, :], phase_condition(X0))
+
+    return output
+
+def numerical_shooting(f, phase_condition, X0, T_guess,  **params):
+    """
+   Returns the initial conditions and period of a periodic orbit in an ODE 
+   system using the numerical shooting method.
+   
+   Parameters: 
+   f : (function) The ODE system.
+   phase_condition : (function) function that takes the initial conditions 
+   and returns the values of some specific variable(s) at the end of the time 
+   interval.
+   X0 : (list) initial conditions.
+   T_guess : (float)  initial guess for the period of the periodic orbit.
+   params : any parameters.
+       
+   """
+    X0_with_T = X0.copy()
+    X0_with_T.append(T_guess)
+
+    data = (f, phase_condition, params) if params else (f, phase_condition)
+
+    sol = fsolve(findroot, X0_with_T, args=data)
+
+    if sol[:-1].all() == np.array(X0).all() and sol[-1] == T_guess:
+        print('Root Finder Failed, returning empty array...')
+        return []
+
+    X0 = sol[:-1]
+    T = sol[-1]
+
+    return X0, T
+
+
 def phase_condition(f, u0, *params):
     """
     Returns the phase condition for a ode system.
@@ -84,6 +133,25 @@ def shooting(f):
     
     return residuals
 
+def plotsol(ode, phasecondition, u0, args=(), dtmax=0.01):
+
+    def shooting2(ode, u0, phasecondition, method, **params):
+        G = shooting(ode)
+        orbit = method(G, u0, phasecondition, **params)
+        print(orbit)
+        return orbit
+    
+    def shootingG(ode):
+        def G(x0, phasecondition, **params):
+            u0, t = x0[:-1], x0[-1]
+            g = np.append(u0 - solve_ivp(ode, [0, t], u0, args=params, method='RK45', t_eval=[t]).y[:, -1], phasecondition(u0, t, **params))
+            return g
+        return G
+    
+    shootingoutput = shooting2(ode, u0, phasecondition, fsolve)
+    sol = solve_ivp(ode, t, y0=u0, method='RK45', args=args, max_step=max_step)
+
+
 def orbit(f, u0, phasecondition, system, *params):
     """
     Solve and plot result of root finding problem.
@@ -136,6 +204,8 @@ def orbit(f, u0, phasecondition, system, *params):
     plt.show()
 
     return solx, solt
+
+
 
 def main():
     # Define the ODE system

@@ -168,48 +168,6 @@ def solve_ode(f, x0, t0, t1, dtmax, method, system, *params):
 
 
 
-def main():
-    # Solve ODE using Euler and plot
-    f = fdot
-    x0 = 1
-    t0 = 0 
-    t1 = 10
-    dtmax = 0.1
-    method = 'Euler'
-    system = False
-    params = ()
-    
-    fdoteuler, teuler = solve_ode(f, x0, t0, t1, dtmax, method, system, params)
-    plt.plot(teuler, fdoteuler)
-    plt.show()
 
-    # Solve ODE using RK4 and plot
-    method = 'RK4'
-    fdotrk4, trk4 = solve_ode(f, x0, t0, t1, dtmax, method, system, params)
-    plt.plot(trk4, fdotrk4)
-    plt.show()
-
-    # Solve ODE system using Euler and plot
-    f = fddot
-    x0 = [1, 0]
-    t0 = 0
-    t1 = 10
-    dtmax = 0.1
-    method = 'Euler'
-    system = True
-    params = ()
-
-    fddoteuler, teuler = solve_ode(f, x0, t0, t1, dtmax, method, system, params)
-    plt.plot(teuler, fddoteuler)
-    plt.show()
-
-    # Solve ODE system using RK4 and plot
-    method = 'RK4'
-    fddotrk4, trk4 = solve_ode(f, x0, t0, t1, dtmax, method, system, params)
-    plt.plot(trk4, fddotrk4)
-    plt.show()
-
-if __name__ == "__main__":
-    main()
     
     

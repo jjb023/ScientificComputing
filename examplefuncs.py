@@ -54,3 +54,20 @@ def predator_prey(X, t, params):
     
     return np.array([dxdt, dydt])
 
+def extended_hopf_bifurcation(X, t, mu):
+    """
+    Defines the extended Hopf bifurcation normal form differential equations.
+
+    Parameters:
+    X (array): An array of state variables [x, y, z].
+    t (float): Time variable (not used in the equations directly as the system is autonomous).
+    mu (float): Parameter mu in the differential equations.
+
+    Returns:
+    array: Derivatives [dx/dt, dy/dt, dz/dt].
+    """
+    x, y, z = X
+    dxdt = mu*x - y - z + x*((x**2 + y**2 + z**2)/mu - x)
+    dydt = x + mu*y - z + y*((x**2 + y**2 + z**2)/mu - y)
+    dzdt = x + y + mu*z + z*((x**2 + y**2 + z**2)/mu - z)
+    return np.array([dxdt, dydt, dzdt])

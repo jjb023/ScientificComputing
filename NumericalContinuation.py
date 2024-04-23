@@ -1,54 +1,40 @@
 import numpy as np
 from scipy.optimize import fsolve
 from shooting import shooting
+import warnings
 
 
-def natural_parameter_continuation(f, df, parameter_range, initial_guess, discretisation, step_size=0.01):
+
+def natural_parameter_continuation(f, u0, parmin, parmax, steps, phasecon='None', discretisation ='fsolve'):
     """
-    Natural parameter continuation method.
-    
-    :param f: Function of the variable and parameter, f(x, p).
-    :param df: Partial derivative of f with respect to the variable x.
-    :param parameter_range: Tuple containing the start and end values of the parameter.
-    :param initial_guess: Initial guess for the root at the start of the parameter range.
-    :param discretisation: Discretisation method to use.
-    :param step_size: Step size for increasing the parameter.
-    :return: Array of parameter values and their corresponding roots.
+    Compute and plot the continuation of a solution of an ODE system with respect to a parameter.
+
+    Parameters:
+    f : function
+        The ODE system.
+    u0 : array
+        Initial conditions.
+    parmin : float
+        Minimum parameter value.
+    parmax : float
+        Maximum parameter value.
+    steps : int
+        Number of steps.
+    phasecon : function
+        The phase condition.
+    discretisation : string
+        The discretisation method to use, either 'fsolve' or 'shooting'.   
     """
-    p_values = np.arange(parameter_range[0], parameter_range[1] + step_size, step_size)
-    roots = np.empty_like(p_values)
-    x = initial_guess
 
-    for i, p in enumerate(p_values):
-        if discretisation == 'shooting':
-            try:
+    sollist = []
+    pars = np.linspace(parmin, parmax, steps)  
+    for par in pars:
+        try:
+            sol = fsolve(f, u0, args=(par,))
+        except Exception as e:
+            warnings.warn(f"Error encountered in fsolve for par={par}: {e}")
+            continue
+        sollist.append(sol)
+        u0 =sol
+    return np.array(sollist), pars
 
-        func = lambda x: f(x, p)
-        dfunc = lambda x: df(x, p)
-        x = discretisation(func, dfunc, x)
-        roots[i] = x
-
-    return p_values, roots
-    
-
-# Example Usage
-if __name__ == "__main__":
-    # Define your function and its derivative here
-    def example_func(x, p):
-        return np.cos(x) - p
-    
-    def example_dfunc(x, p):
-        return -np.sin(x)
-    
-    # Set the range for the parameter 'p' from 0 to 2
-    p_range = (0, 2)
-    # Initial guess for the root of 'example_func' when p=0
-    initial_x = 1.0
-    
-    # Perform natural parameter continuation
-    parameters, solutions = natural_parameter_continuation(
-        example_func, example_dfunc, p_range, initial_x
-    )
-    
-    print("Parameter values:", parameters)
-    print("Corresponding roots:", solutions)

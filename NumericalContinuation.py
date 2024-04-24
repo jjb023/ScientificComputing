@@ -5,7 +5,7 @@ import warnings
 
 
 
-def natural_parameter_continuation(f, u0, parmin, parmax, steps, phasecon='None', discretisation ='fsolve'):
+def natpar(f, u0, parmin, parmax, steps, phasecondition, discretisation, **params):
     """
     Compute and plot the continuation of a solution of an ODE system with respect to a parameter.
 
@@ -13,7 +13,7 @@ def natural_parameter_continuation(f, u0, parmin, parmax, steps, phasecon='None'
     f : function
         The ODE system.
     u0 : array
-        Initial conditions.
+        Initial guesses.
     parmin : float
         Minimum parameter value.
     parmax : float

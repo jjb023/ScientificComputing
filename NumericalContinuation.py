@@ -1,33 +1,41 @@
 import numpy as np
 from scipy.optimize import fsolve
-from shooting import shooting
+from reportshooting import numshoot
 import warnings
 
 
 
-def natpar(f, u0, parmin, parmax, steps, phasecondition, discretisation, **params):
+def natpar(f, guess, parvalues, parameter, Tguess, phasecondition, discretisation, **params):
     """
     Compute and plot the continuation of a solution of an ODE system with respect to a parameter.
 
     Parameters:
     f : function
-        The ODE system.
+        The ODE system to be solved.
     u0 : array
         Initial guesses.
-    parmin : float
-        Minimum parameter value.
-    parmax : float
-        Maximum parameter value.
-    steps : int
-        Number of steps.
+    pars : tuple
+        Containing (minimum parameter value, maximum parameter value, how many values).
     phasecon : function
         The phase condition.
     discretisation : string
         The discretisation method to use, either 'fsolve' or 'shooting'.   
     """
+    parmin, parmax, steps = parvalues
+    parvals = np.linspace(parmin, parmax, steps)
 
-    sollist = []
-    pars = np.linspace(parmin, parmax, steps)  
+    Ts = []
+
+    for i in range(steps):
+        params[parameter] = parvals[i]
+        prevsol = u0[i]
+
+        if discretisation == 'shooting':
+            try:
+                X0, T = numshoot
+
+
+    sollist = [] 
     for par in pars:
         try:
             sol = fsolve(f, u0, args=(par,))

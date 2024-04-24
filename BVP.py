@@ -32,6 +32,7 @@ def Nmatrix(N, D):
     A = D * A
     return A
 
+
 # Construct vector representing boundary conditions of 1d diffusion equation
 def dirichlet(N, u0, uN):
     """
@@ -58,7 +59,7 @@ def dirichlet(N, u0, uN):
     return b
 
 # Construct matrix representing neumann boundary conditions with zero flux at both ends
-def Mneumann(N, u0, uN, dx):
+def neumann(N, bc_left, bc_right, dx):
     """
     Builds N-1xN-1 matrix for finite difference approximation with Neumann boundary conditions.
     
@@ -66,7 +67,7 @@ def Mneumann(N, u0, uN, dx):
     ----------
     N : int
         Number of grid points.
-    u0 : float
+    bc_left : float
         Boundary condition at x=left boundary.
     uN : float
         Boundary condition at x=right boundary.
@@ -86,8 +87,8 @@ def Mneumann(N, u0, uN, dx):
             A[i, i-1] = 1
         if i != N-2:
             A[i, i+1] = 1
-    A[0, 0] = -1 - u0/dx
-    A[-1, -1] = -1 + uN/dx
+    A[0, 0] = -1 - bc_left/dx
+    A[-1, -1] = -1 + bc_right/dx
     return A
 
 def solve_poisson(lower_x, upper_x, num_points, D, sigma, bc_left, bc_right, method='dense'):

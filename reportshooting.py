@@ -74,14 +74,14 @@ def findroot(X0, *data):
 
 def numshoot(f, phasecondition, X0, Tguess, **params):
 
-    X0_with_T = X0.copy()
+    X0T = X0.copy()
     # print(X0_with_T)  ## Debugging
-    X0_with_T.append(Tguess)
+    X0T.append(Tguess)
     # print(X0_with_T)  ## Debugging
 
     data = (f, phasecondition, params) if params else (f, phasecondition)
 
-    sol = fsolve(findroot, X0_with_T, args=data)
+    sol = fsolve(findroot, X0T, args=data)
 
     if sol[:-1].all() == np.array(X0).all() and sol[-1] == Tguess:
         print('Root Finder Failed, returning empty array...')

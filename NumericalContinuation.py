@@ -16,7 +16,7 @@ def natpar(f, u0, parvalues, parameter, Tguess, phasecondition, discretisation, 
         The ODE system to be solved.
     u0 : array
         Initial guesses.
-    pars : tuple
+    parsvalues : tuple
         Containing (minimum parameter value, maximum parameter value, how many values).
     phasecon : function
         The phase condition.
@@ -40,7 +40,9 @@ def natpar(f, u0, parvalues, parameter, Tguess, phasecondition, discretisation, 
             try:
                 # print(u0) # Debugging
                 # print(prevsol) # Debugging
+
                 X0, T = numshoot(f, phasecondition, prevsol.copy(), Tguess, **params )
+                # print(X0)
                 u0.append(list(X0))
                 # print(u0) # Debugging
                 Ts.append(T)
@@ -50,9 +52,11 @@ def natpar(f, u0, parvalues, parameter, Tguess, phasecondition, discretisation, 
         else:
             r = fsolve(discretisation(f), u0[i], args=params)
             u0.append(r)
-        
+
+        # print(u0)
+    #print(u0)    
     u0 = np.array(u0)
-        
+    # print(u0)    
     return u0, parvals, Ts
 
 def plot_continuation(u0, parvals):

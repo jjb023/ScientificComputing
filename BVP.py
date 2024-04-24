@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.sparse as sp
 import scipy.sparse.linalg as spla
+import timeit
 
 
 def Nmatrix(N, D):
@@ -129,8 +130,10 @@ def solve_poisson(lower_x, upper_x, num_points, D, sigma, bc_left, bc_right, met
         np.fill_diagonal(A[1:], D / dx**2)
         np.fill_diagonal(A[:, 1:], D / dx**2)
     elif method == 'sparse':
-        A = sp.diags([-1, 2, -1], [-1, 0, 1], shape=(num_points, num_points)).toarray()
-        A = D * A / dx**2
+        main_diag = np.full(num_points, -2 * D / dx**2)
+        off_diags = np.full(num_points - 1, D / dx**2)
+        A = sp.diags([off_diags, main_diag, off_diags], offsets=[-1, 0, 1], shape=(num_points, num_points), format='csr')
+    
     
     # Modify A for boundary conditions
     A[0, 0] = A[-1, -1] = 1
@@ -142,27 +145,38 @@ def solve_poisson(lower_x, upper_x, num_points, D, sigma, bc_left, bc_right, met
     b[-1] = bc_right  # Apply right boundary condition
 
     # Solve the linear system using NumPy's linalg solver
+    start_time = timeit.default_timer()
     if method == 'dense':
         u = np.linalg.solve(A, b)
     elif method == 'sparse':
         u = spla.spsolve(sp.csr_matrix(A), b)
+    elapsed_time = timeit.default_timer() - start_time
 
     
     index_center = num_points // 2  # Index for x=0 if domain is symmetrical around 0
     print(f"Value of u at u(0) (for sigma={sigma}) :{u[index_center]:.4f}")   
+    print(f"Time to solve using {method} method: {elapsed_time:.4f} seconds")
 
-    return x, u
+    return x, u, elapsed_time
 
 # Plotting the results
 def plot_poisson(xlist, ulist, labels, title):
     plt.figure(figsize=(8, 4))
     for x, u, label in zip(xlist, ulist, labels):
         plt.plot(x, u, label=label)
-    plt.title('Numerical Solution of the Poisson Equation Using NumPy linalg')
+    plt.title(title)
     plt.xlabel('x')
     plt.ylabel('u(x)')
     plt.legend()
     plt.grid(True)
     plt.show()
+
+
+def debug_matrix_vector(A, b, method):
+    print(f"Method: {method}")
+    print("Matrix A (sample):")
+    print(A[:5, :5])  # print a small portion of the matrix for readability
+    print("Vector b (sample):")
+    print(b[:5])
 
 

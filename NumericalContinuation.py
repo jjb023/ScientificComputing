@@ -2,10 +2,12 @@ import numpy as np
 from scipy.optimize import fsolve
 from reportshooting import numshoot
 import warnings
+import matplotlib.pyplot as plt
 
 
 
-def natpar(f, guess, parvalues, parameter, Tguess, phasecondition, discretisation, **params):
+
+def natpar(f, u0, parvalues, parameter, Tguess, phasecondition, discretisation, **params):
     """
     Compute and plot the continuation of a solution of an ODE system with respect to a parameter.
 
@@ -23,26 +25,56 @@ def natpar(f, guess, parvalues, parameter, Tguess, phasecondition, discretisatio
     """
     parmin, parmax, steps = parvalues
     parvals = np.linspace(parmin, parmax, steps)
+    # print(parvals) # Debugging
 
-    Ts = []
+    Ts = [Tguess]
+   
 
     for i in range(steps):
         params[parameter] = parvals[i]
         prevsol = u0[i]
+        # print(u0) # Debugging
+        # print(prevsol) # Debugging
 
         if discretisation == 'shooting':
             try:
-                X0, T = numshoot
+                # print(u0) # Debugging
+                # print(prevsol) # Debugging
+                X0, T = numshoot(f, phasecondition, prevsol.copy(), Tguess, **params )
+                u0.append(list(X0))
+                # print(u0) # Debugging
+                Ts.append(T)
+            except ValueError:
+                print(f"Error encountered in numshoot for par={parvals[i]}")
+                break
+        else:
+            r = fsolve(discretisation(f), u0[i], args=params)
+            u0.append(r)
+        
+    u0 = np.array(u0)
+        
+    return u0, parvals, Ts
 
+def plot_continuation(u0, parvals):
+    """
+    Plot the continuation of a solution of an ODE system with respect to a parameter.
 
-    sollist = [] 
-    for par in pars:
-        try:
-            sol = fsolve(f, u0, args=(par,))
-        except Exception as e:
-            warnings.warn(f"Error encountered in fsolve for par={par}: {e}")
-            continue
-        sollist.append(sol)
-        u0 =sol
-    return np.array(sollist), pars
-
+    Parameters:
+    u0 : array
+        The solution of the ODE system.
+    parvals : array
+        The parameter values.
+    """
+    
+    # print(u0) # Debugging
+    x = u0[1:, 0]
+    y = u0[1:, 1]
+    # print(x) # Debugging
+    # print(y) # Debugging   
+    plt.plot(parvals, x, label='x')
+    plt.plot(parvals, y, label='y')
+    plt.xlabel('Parameter')
+    plt.ylabel('Solution')
+    plt.title('Continuation of solution with respect to parameter')
+    plt.legend()
+    plt.show()

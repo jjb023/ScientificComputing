@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def euler_step(f, x, t, dt, **params):
     """
     Single step using the Euler Method at x, t.
@@ -24,7 +25,7 @@ def euler_step(f, x, t, dt, **params):
     """
         
     dxdt = f(x, t, **params)
-    xn = x + dt * np.array(dxdt)
+    xn = [x[0] + dt * dxdt]
 
     return xn
 

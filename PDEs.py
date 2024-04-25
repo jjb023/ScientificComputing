@@ -169,7 +169,7 @@ def implicit_euler(N, D, alpha, beta, a, b, dt, dx, T, xint, IC):
 
 
 
-def diffusionIC(xint, a, b):
+def diffusionIC(xint, b):
     """
     Initial condition for the 1D diffusion equation.
     u(x, 0) = 0.5 * x * (L-x)

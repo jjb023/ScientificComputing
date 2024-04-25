@@ -7,7 +7,7 @@ def f(x, t):
     return -2.5 * x
 
 # Initial condition
-X0 = ([1])
+X0 = np.array([1])
 
 # Time array
 t = np.linspace(0, 1, 100)
@@ -19,6 +19,10 @@ print(f"euler_step output: {x_euler}")
 # Test the RK4_step function
 x_RK4 = odes.RK4_step(f, X0, 0, 0.01)
 print(f"RK4_step output: {x_RK4}")
+
+# Test the heun_step function
+x_heun = odes.heun_step(f, X0, 0, 0.01)
+print(f"heun_step output: {x_heun}")
 
 # Test the solve_to function
 x_solve_to = odes.solve_to(f, X0, 0, 1, 0.01, 'Euler')

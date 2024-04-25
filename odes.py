@@ -1,4 +1,5 @@
 import numpy as np
+from checks import check_ode_inputs
 
 
 def euler_step(f, x, t, dt, **params):
@@ -23,10 +24,9 @@ def euler_step(f, x, t, dt, **params):
     xn : np.array
         The state (x) of the system after a single Euler step.
     """
-        
+    check_ode_inputs(f, x, t, dt) 
     dxdt = f(x, t, **params)
-    xn = [x[0] + dt * dxdt]
-
+    xn = x + dt * dxdt
     return xn
 
 def RK4_step(f, x, t, dt, **params):
@@ -61,7 +61,33 @@ def RK4_step(f, x, t, dt, **params):
     
     return xn
 
-# Solvers
+def heun_step(f, x, t, dt, **params):
+    """
+    Single step using the Heun Method at x, t.
+    
+    Parameters
+    ----------
+    f : function
+        The function representing the ODE system to solve.
+    x : np.array
+        Solution at time t.
+    t : float
+        The initial time.
+    dt : float
+        The step size.
+    **params : 
+        Additional parameters.
+
+    Returns
+    ----------
+    xn : np.array
+        The state (x) of the system after a single Heun step.
+    """
+    check_ode_inputs(f, x, t, dt)
+    k1 = f(x, t, **params)
+    k2 = f(x + dt*k1, t + dt, **params)
+    xn = x + 0.5 * dt * (k1 + k2)
+    return xn
 
 def solve_to(f, X0, t0, t1, dtmax, method, **params):
     """
@@ -115,8 +141,8 @@ def solve_ode(f, X0, t, method, **params):
         X = np.zeros((len(t), X0.shape[0]))
         X[0, :] = X0
     else:
-        X = np.zeros(len(t))
-        X[0] = X0
+        X = np.zeros((len(t), 1))
+        X[0, 0] = X0
 
     for i in range(len(t) - 1):
         t0 = t[i]

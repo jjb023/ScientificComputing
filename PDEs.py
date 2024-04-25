@@ -1,17 +1,19 @@
 import numpy as np
 from BVP import Nmatrix, dirichlet
+import matplotlib.pyplot as plt
 
-def grid(N, xlower, xupper):
+
+def xgrid(N, a, b):
     """
-    Creates a grid of N points between xlower and xupper.
+    Creates a grid of N points between a and b.
     
     Parameters
     ----------
     N : int
         Number of grid points.
-    xlower : float
+    a : float
         Lower bound of x.
-    xupper : float
+    b : float
         Upper bound of x.
         
     Returns
@@ -24,10 +26,12 @@ def grid(N, xlower, xupper):
         x interval.
     
     """
-    x = np.linspace(xlower, xupper, N+1)
-    dx = (xupper - xlower) / N
+    x = np.linspace(a, b, N+1)
+    dx = (b - a) / N
     xint = x[1:-1]
     return x, dx, xint
+
+
 
 def maxdt(D, dx):
     """
@@ -45,7 +49,8 @@ def maxdt(D, dx):
     dt : float
         Maximum time step size.
     """
-    dt = dx**2 / (2*D)
+
+    dt = 0.5 * (dx**2 / D)
     return dt
 
 
@@ -53,7 +58,7 @@ def maxdt(D, dx):
 
 
 # Explicit Euler function for Partial Differential Equations
-def explicit_euler(N, D, bcleft, bcright, xlower, xupper, dt, dx, t, nt, xint, IC):
+def explicit_euler(N, D, alpha, beta, a, b, dt, dx,  T, xint, IC):
     """
     Solves the 1D diffusion equation using the explicit Euler method.
     
@@ -63,13 +68,13 @@ def explicit_euler(N, D, bcleft, bcright, xlower, xupper, dt, dx, t, nt, xint, I
         Number of grid points.
     D : float
         Diffusion coefficient.
-    bcleft : float
+    alpha : float
         Boundary condition at x=left boundary.
-    bcright : float
+    beta : float
         Boundary condition at x=right boundary.
-    xlower : float
+    a : float
         Lower bound of x.
-    xupper : float
+    b : float
         Upper bound of x.
     dt : float
         Time step size.
@@ -90,18 +95,121 @@ def explicit_euler(N, D, bcleft, bcright, xlower, xupper, dt, dx, t, nt, xint, I
         Solution to the 1D diffusion equation.
     """
     # Initialize the solution
+    C = (D * dt)/(dx**2)
+    nt = int(np.ceil(T/dt))
     u = np.zeros((nt+1, N-1))
-    u[0, :] = IC(xint, xlower, xupper)
+    u[0, :] = IC(xint, b)
+    t = np.linspace(0, T, nt)
+
+
+   #  Matrices
+    A = Nmatrix(N, D)
+    B = A @ dirichlet(N, alpha, beta)
+
+    # Time-stepping loop
+    for n in range(0, nt):
+        u[n+1, :] = u[n, :] + C * (A @ u[n, :] + B)
+
+    return u, t
+
+# Use numpys linalg.solve to solve the linear system of equations
+def implicit_euler(N, D, alpha, beta, a, b, dt, dx, T, xint, IC):
+    """
+    Solves the 1D diffusion equation using the implicit Euler method.
+    
+    Parameters
+    ----------
+    N : int
+        Number of grid points.
+    D : float
+        Diffusion coefficient.
+    alpha : float
+        Boundary condition at x=left boundary.
+    beta : float
+        Boundary condition at x=right boundary.
+    a : float
+        Lower bound of x.
+    b : float
+        Upper bound of x.
+    dt : float
+        Time step size.
+    dx : float
+        Grid spacing.
+    t : float
+        Initial time.
+    nt : int
+        Number of time steps.
+    xint : array
+        x interval.
+    IC : string
+        Type of initial condition.
+        
+    Returns
+    ----------
+    u : np.array
+        Solution to the 1D diffusion equation.
+    """
+    # Initialize the solution
+    C = (D * dt)/(dx**2)
+    nt = int(np.ceil(T/dt))
+    u = np.zeros((nt+1, N-1))
+    u[0, :] = IC(xint, b)
+    t = np.linspace(0, T, nt)
 
     # Matrices
     A = Nmatrix(N, D)
-    B = A @ dirichlet(N, bcleft, bcright)
+    B = A @ dirichlet(N, alpha, beta)
 
     # Time-stepping loop
     for n in range(0, nt-1):
-        u[n+1, :] = u[n, :] + (dt*D/dx**2) * (A @ u[n, :] + B)
+        u[n+1, :] = np.linalg.solve(np.eye(N-1) - C*A, u[n, :] + C*B) 
 
-    return u
+    return u, t
+
+
+
+
+def diffusionIC(xint, a, b):
+    """
+    Initial condition for the 1D diffusion equation.
+    u(x, 0) = 0.5 * x * (L-x)
+    
+    Parameters
+    ----------
+    xint : array
+        x interval.
+    a : float
+        Lower bound of x.
+    b : float
+        Upper bound of x.
+        
+    Returns
+    ----------
+    IC : np.array
+        Initial condition same shape as xint.
+    """
+    IC = 0.5 * xint * (b - xint)
+    return IC
+
+def plot_pde(expu, impu, expt, impt):
+    """
+    Plot the solution to the 1D diffusion equation using the explicit Euler method.
+    
+    Parameters
+    ----------
+    u : np.array
+        Solution to the 1D diffusion equation.
+    t : np.array
+        Time points.
+    """
+        # change size of the individual points
+    plt.plot(expt, expu, 'o', markersize=1, label='Explicit Euler')
+    plt.plot(impt, impu, 'o', markersize=1, label='Implicit Euler')
+    plt.xlabel('Time')
+    plt.ylabel('u')
+    plt.legend()
+    plt.show()
+    
 
 
 

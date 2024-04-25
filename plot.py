@@ -1,5 +1,5 @@
 import numpy as np
-from finalODEs import solve_ode
+from Trials.finalODEs import solve_ode
 import matplotlib.pyplot as plt
 
 def plotode(X, T):

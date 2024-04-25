@@ -1,4 +1,4 @@
-from ODEs import solve_ode
+from Trials.oldODEs import solve_ode
 import numpy as np
 import matplotlib.pyplot as plt
 

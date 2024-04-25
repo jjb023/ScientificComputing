@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from examplefuncs import *
+from Trials.examplefuncs import *
 
 def euler_step_system(state, dt, system_derivs):
     """

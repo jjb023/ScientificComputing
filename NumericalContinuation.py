@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.optimize import fsolve
-from reportshooting import numshoot
+from shooting import numshoot
 import warnings
 import matplotlib.pyplot as plt
 

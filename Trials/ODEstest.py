@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from ODEs import solve_ode  # Make sure to replace 'your_module_name' with the actual name of your Python file without the .py extension
+from Trials.oldODEs import solve_ode  # Make sure to replace 'your_module_name' with the actual name of your Python file without the .py extension
 
 def analytical_solution(t):
     """ Analytical solution of dx/dt = -x """

@@ -1,10 +1,10 @@
 import numpy as np
 import math
-from examplefuncs import *
+from Trials.examplefuncs import *
 import matplotlib.pyplot as plt
 from inputchecks import *
-from ODEcheck import *
-from courseworkfuncs import *
+from Trials.ODEcheck import *
+from Trials.courseworkfuncs import *
 
 
 def euler_step(f, x0, t0, dt, *params):

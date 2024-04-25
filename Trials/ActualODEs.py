@@ -1,5 +1,5 @@
 import numpy as np
-from examplefuncs import *
+from Trials.examplefuncs import *
 import matplotlib.pyplot as plt
 from checks import * 
 

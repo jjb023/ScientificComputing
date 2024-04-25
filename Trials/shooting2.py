@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.optimize import fsolve  
-from ODEs import solve_ode  # Assuming solve_ode is properly defined in ODEs module
+from Trials.oldODEs import solve_ode  # Assuming solve_ode is properly defined in ODEs module
 
 def phase_condition(y_final, y_initial, *params):
     """

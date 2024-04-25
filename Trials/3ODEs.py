@@ -2,7 +2,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 from inputchecks import *
-from examplefuncs import *
+from Trials.examplefuncs import *
 
 # Euler Step Method
 def euler_step(f, x, t, dt, *params):

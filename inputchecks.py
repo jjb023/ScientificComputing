@@ -1,5 +1,5 @@
 import numpy as np
-from finalODEs import *
+from Trials.finalODEs import *
 
 
 

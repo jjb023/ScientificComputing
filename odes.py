@@ -1,9 +1,4 @@
 import numpy as np
-from examplefuncs import predator_prey
-
-
-
-# Steps
 
 def euler_step(f, x, t, dt, **params):
     """
@@ -129,25 +124,5 @@ def solve_ode(f, X0, t, method, **params):
 
     return X
 
-# def brusselator(X, t, **params):
-#     x, y = X
-#     A = params['A']
-#     B = params['B']
 
-#     dxdt = A + x**2 * y - (B + 1) * x
-#     dydt = B * x - x**2 * y
-
-#     dXdt = np.array([dxdt, dydt])
-#     return dXdt
-
-# Example
-# t = np.linspace(0, 20, 1000)
-# X = solve_ode(brusselator, [1, 1], t, RK4_step, A=1, B=3)
-
-# # plot X vs t
-# import matplotlib.pyplot as plt
-# plt.plot(t, X[:,0], label='x')
-# plt.plot(t, X[:,1], label='y')
-# plt.legend()
-# plt.show()
 

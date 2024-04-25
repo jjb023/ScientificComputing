@@ -6,8 +6,8 @@ from scipy.integrate import solve_ivp
 
 
 
-def general_pc(X0, ode_system, **params):
-    pc = ode_system(X0, 0, **params)[0]
+def general_pc(f, X0, **params):
+    pc = f(X0, 0, **params)[0]
     return pc
 
 def brusselator(X, t, **params):
@@ -144,7 +144,7 @@ def plotorbit(f, X0, T, **params):
         plt.plot(t, X[:, i], label = labels[i], color = colors[i])
     plt.xlabel('t')
     plt.ylabel('State Variables')
-    plt.title("title")
+    plt.title("Time Series of State Variables")
     plt.legend()
     plt.show()
 

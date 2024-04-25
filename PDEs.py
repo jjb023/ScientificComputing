@@ -203,7 +203,7 @@ def plot_pde(expu, impu, expt, impt):
         Time points.
     """
         # change size of the individual points
-    plt.plot(expt, expu, 'o', markersize=1, label='Explicit Euler')
+    plt.plot(expt, expu, 'o', markersize=2, label='Explicit Euler')
     plt.plot(impt, impu, 'o', markersize=1, label='Implicit Euler')
     plt.xlabel('Time')
     plt.ylabel('u')

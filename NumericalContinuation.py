@@ -25,7 +25,7 @@ def natpar(f, u0, parvalues, parameter, Tguess, phasecondition, discretisation, 
     """
     parmin, parmax, steps = parvalues
     parvals = np.linspace(parmin, parmax, steps)
-    # print(parvals) # Debugging
+    
 
     Ts = [Tguess]
    
@@ -33,18 +33,13 @@ def natpar(f, u0, parvalues, parameter, Tguess, phasecondition, discretisation, 
     for i in range(steps):
         params[parameter] = parvals[i]
         prevsol = u0[i]
-        # print(u0) # Debugging
-        # print(prevsol) # Debugging
+        
+        
 
         if discretisation == 'shooting':
             try:
-                # print(u0) # Debugging
-                # print(prevsol) # Debugging
-
                 X0, T = numshoot(f, phasecondition, prevsol.copy(), Tguess, **params )
-                # print(X0)
                 u0.append(list(X0))
-                # print(u0) # Debugging
                 Ts.append(T)
             except ValueError:
                 print(f"Error encountered in numshoot for par={parvals[i]}")
@@ -52,12 +47,44 @@ def natpar(f, u0, parvalues, parameter, Tguess, phasecondition, discretisation, 
         else:
             r = fsolve(discretisation(f), u0[i], args=params)
             u0.append(r)
-
-        # print(u0)
-    #print(u0)    
     u0 = np.array(u0)
-    # print(u0)    
+    
     return u0, parvals, Ts
+
+def pseudoarclengthcontinuation(f, u0, parvalues, parameter, Tguess, phasecondition, discretisation, **params):
+    """
+    Use the pseudo-arclength continuation method to compute and plot the continuation of a solution of an ODE system with respect to a parameter.
+    """
+    parmin, parmax, steps = parvalues
+    parvals = np.linspace(parmin, parmax, steps)
+    
+
+    Ts = [Tguess]
+    u0 = [u0]
+    du0 = np.zeros_like(u0[0])
+    du0[0] = 1
+    du0 = du0/np.linalg.norm(du0)
+    for i in range(steps):
+        params[parameter] = parvals[i]
+        prevsol = u0[i]
+        
+        if discretisation == 'shooting':
+            try:
+                X0, T = numshoot(f, phasecondition, prevsol.copy(), Tguess, **params )
+                u0.append(list(X0))
+                Ts.append(T)
+            except ValueError:
+                print(f"Error encountered in numshoot for par={parvals[i]}")
+                break
+        else:
+            r = fsolve(discretisation(f), u0[i], args=params)
+            u0.append(r)
+        du0 = du0/np.linalg.norm(du0)
+        u0[i+1] = u0[i] + 0.01*du0
+    u0 = np.array(u0)
+    
+    return u0, parvals, Ts
+
 
 def plot_continuation(u0, parvals):
     """
@@ -70,11 +97,11 @@ def plot_continuation(u0, parvals):
         The parameter values.
     """
     
-    # print(u0) # Debugging
+    
     x = u0[1:, 0]
     y = u0[1:, 1]
-    # print(x) # Debugging
-    # print(y) # Debugging   
+    
+    
     plt.plot(parvals, x, label='x')
     plt.plot(parvals, y, label='y')
     plt.xlabel('Parameter')
@@ -82,3 +109,5 @@ def plot_continuation(u0, parvals):
     plt.title('Continuation of solution with respect to parameter')
     plt.legend()
     plt.show()
+
+

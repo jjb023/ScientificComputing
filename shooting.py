@@ -54,6 +54,22 @@ def hopfpc(X0, **params):
     return pchopf
 
 def findroot(X0, *data):
+    """
+    Function to find the root of the system.
+
+    Parameters
+    ----------
+    X0 : array
+        Initial conditions.
+    data : tuple
+        Tuple containing the ODE system, phase condition and parameters.
+
+    Returns
+    ----------
+    output : array
+        The difference between the initial conditions and the phase condition.
+    """
+
     T = X0[-1]
     X0 = X0[:-1]
     t = np.linspace(0, T, 100)
@@ -73,6 +89,29 @@ def findroot(X0, *data):
 
 
 def numshoot(f, phasecondition, X0, Tguess, **params):
+    """
+    Returns the initial conditions and period of a periodic orbit in an ODE
+    system using the numerical shooting method.
+
+    Parameters
+    ----------
+    f : function 
+        The ODE system.
+    phasecondition : function
+        Function that takes the initial conditions and returns the values of some specific variable(s) at the end of the time interval.
+    X0 : list
+        Initial conditions.
+    Tguess : float
+        Initial guess for the period of the periodic orbit.
+    params : any parameters.
+
+    Returns
+    ----------
+    X0 : list
+        The initial conditions of the periodic orbit.
+    T : float
+        The period of the periodic orbit.
+    """
 
     X0T = X0.copy()
     # print(X0_with_T)  ## Debugging
@@ -84,7 +123,7 @@ def numshoot(f, phasecondition, X0, Tguess, **params):
     sol = fsolve(findroot, X0T, args=data)
 
     if sol[:-1].all() == np.array(X0).all() and sol[-1] == Tguess:
-        print('Root Finder Failed, returning empty array...')
+        print('Root not found, returning empty array.')
         return []
     
     X0 = sol[:-1]
@@ -108,13 +147,4 @@ def plotorbit(f, X0, T, **params):
     plt.show()
 
 
-
-# Example
-# params = {'A': 1, 'B': 3}
-# X0 = [1, 1]
-# Tguess = 9
-# X0, T = numshoot(brusselator, brusspc, X0, Tguess, A = 1, B = 3)
-# print(X0, T)
-
-# plotorbit(brusselator, X0, T, A = 1, B = 3)
 

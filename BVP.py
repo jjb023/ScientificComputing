@@ -58,7 +58,6 @@ def dirichlet(N, u0, uN):
     b[-1] = uN
     return b
 
-# Construct matrix representing neumann boundary conditions with zero flux at both ends
 def neumann(N, bc_left, bc_right, dx):
     """
     Builds N-1xN-1 matrix for finite difference approximation with Neumann boundary conditions.

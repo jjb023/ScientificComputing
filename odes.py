@@ -51,7 +51,7 @@ def RK4_step(f, x, t, dt, **params):
     xn : np.array
         The state (x) of the system after a single RK4 step.
     """
-    # print(x) # Debugging
+    check_ode_inputs(f, x, t, dt) 
     k1 = np.array(f(x, t, **params))
     k2 = np.array(f(x + 0.5*dt*k1, t + 0.5*dt, **params))
     k3 = np.array(f(x + 0.5*dt*k2, t + 0.5*dt, **params))
@@ -115,15 +115,17 @@ def solve_to(f, X0, t0, t1, dtmax, method, **params):
     X1 : np.array
         The state of the system after the final time.
     """
-    # Create a dictionary for the method
-    method_dict = {'Euler': euler_step, 'RK4': RK4_step}
-    method = method_dict[method]
+
+    method_dict = {'Euler': euler_step, 'RK4': RK4_step, 'Heun': heun_step}
+    method = method_dict.get(method)
+    if method is None:
+        raise ValueError('Method not found. Please use Euler, RK4 or Heun.')
 
     X = X0
     t = t0
     dt = dtmax
     while t < t1:
-        if t + dt > t1:
+        if t + dt < t1:
             X = method(f, X, t, dt, **params)
             t += dt
         else:

@@ -1,12 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from odes import solve_ode
+from ODEs import solve_ode
 from scipy.optimize import fsolve
 from scipy.integrate import solve_ivp
 
 
 
-# Brusselator ODE
+def general_pc(X0, ode_system, **params):
+    pc = ode_system(X0, 0, **params)[0]
+    return pc
 
 def brusselator(X, t, **params):
     x, y = X

@@ -2,7 +2,7 @@ import numpy as np
 import math
 from Trials.examplefuncs import *
 import matplotlib.pyplot as plt
-from inputchecks import *
+from bin.inputchecks import *
 from Trials.ODEcheck import *
 from Trials.courseworkfuncs import *
 

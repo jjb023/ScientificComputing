@@ -1,7 +1,7 @@
 import numpy as np 
 import math
 import matplotlib.pyplot as plt
-from inputchecks import *
+from bin.inputchecks import *
 from Trials.examplefuncs import *
 
 # Euler Step Method

@@ -22,6 +22,15 @@ def natpar(f, u0, parvalues, parameter, Tguess, phasecondition, discretisation, 
         The phase condition.
     discretisation : string
         The discretisation method to use, either 'fsolve' or 'shooting'.   
+    **params : any additional parameters.
+
+    Returns:
+    u0 : array
+        The solution of the ODE system.
+    parvals : array
+        The parameter values.
+    Ts : array
+        The time values.
     """
     parmin, parmax, steps = parvalues
     parvals = np.linspace(parmin, parmax, steps)
@@ -54,6 +63,27 @@ def natpar(f, u0, parvalues, parameter, Tguess, phasecondition, discretisation, 
 def pseudoarclengthcontinuation(f, u0, parvalues, parameter, Tguess, phasecondition, discretisation, **params):
     """
     Use the pseudo-arclength continuation method to compute and plot the continuation of a solution of an ODE system with respect to a parameter.
+
+    Parameters:
+    f : function
+        The ODE system to be solved.
+    u0 : array
+        Initial guesses.
+    parsvalues : tuple
+        Containing (minimum parameter value, maximum parameter value, how many values).
+    phasecon : function
+        The phase condition.
+    discretisation : string
+        The discretisation method to use, either 'fsolve' or 'shooting'.
+    **params : any additional parameters.
+
+    Returns:
+    u0 : array
+        The solution of the ODE system.
+    parvals : array
+        The parameter values.
+    Ts : array
+        The time values.
     """
     parmin, parmax, steps = parvalues
     parvals = np.linspace(parmin, parmax, steps)

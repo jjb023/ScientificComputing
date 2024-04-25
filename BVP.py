@@ -33,7 +33,6 @@ def Nmatrix(N, D):
     return A
 
 
-# Construct vector representing boundary conditions of 1d diffusion equation
 def dirichlet(N, u0, uN):
     """
     Builds vector representing boundary conditions for finite difference approximation.
@@ -123,7 +122,7 @@ def solve_poisson(lower_x, upper_x, num_points, D, sigma, bc_left, bc_right, met
     x = np.linspace(lower_x, upper_x, num_points)
     dx = x[1] - x[0]  # Grid spacing
     
-    # Initialize the coefficient matrix A
+   
     if method == 'dense':
         A = np.zeros((num_points, num_points))
         np.fill_diagonal(A, -2 * D / dx**2)
@@ -135,16 +134,15 @@ def solve_poisson(lower_x, upper_x, num_points, D, sigma, bc_left, bc_right, met
         A = sp.diags([off_diags, main_diag, off_diags], offsets=[-1, 0, 1], shape=(num_points, num_points), format='csr')
     
     
-    # Modify A for boundary conditions
+   
     A[0, 0] = A[-1, -1] = 1
     A[0, 1] = A[-1, -2] = 0
 
-    # Construct the source term vector b
-    b = (1 / (2 * np.pi * sigma**2)) * np.exp(-x**2 / (2 * sigma**2))
-    b[0] = bc_left  # Apply left boundary condition
-    b[-1] = bc_right  # Apply right boundary condition
 
-    # Solve the linear system using NumPy's linalg solver
+    b = (1 / (2 * np.pi * sigma**2)) * np.exp(-x**2 / (2 * sigma**2))
+    b[0] = bc_left
+    b[-1] = bc_right  
+
     start_time = timeit.default_timer()
     if method == 'dense':
         u = np.linalg.solve(A, b)
@@ -159,7 +157,6 @@ def solve_poisson(lower_x, upper_x, num_points, D, sigma, bc_left, bc_right, met
 
     return x, u, elapsed_time
 
-# Plotting the results
 def plot_poisson(xlist, ulist, labels, title):
     plt.figure(figsize=(8, 4))
     for x, u, label in zip(xlist, ulist, labels):
@@ -175,7 +172,7 @@ def plot_poisson(xlist, ulist, labels, title):
 def debug_matrix_vector(A, b, method):
     print(f"Method: {method}")
     print("Matrix A (sample):")
-    print(A[:5, :5])  # print a small portion of the matrix for readability
+    print(A[:5, :5])  
     print("Vector b (sample):")
     print(b[:5])
 

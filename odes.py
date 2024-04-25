@@ -136,7 +136,25 @@ def solve_to(f, X0, t0, t1, dtmax, method, **params):
 
 def solve_ode(f, X0, t, method, **params):
     """
-    Solve an ODE to 
+    Solve an ODE to a set of times using specified method.
+
+    Parameters
+    ----------
+    f : function
+        The function representing the ODE system to solve.
+    X0 : np.array
+        Initial values of solution.
+    t : np.array
+        The times to solve to.
+    method : string
+        The method to use, either 'Euler' or 'RK4'.
+    **params :
+        Additional parameters for the ODE.
+
+    Returns
+    ----------
+    X : np.array
+        The state of the system at each time in t.
     """
     X0 = np.array(X0)
     if len(X0) > 1:

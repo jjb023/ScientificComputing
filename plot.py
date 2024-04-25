@@ -49,13 +49,7 @@ def plotphaseportrait(X):
     X : array
         The solution to the ODE.
     """
-    # plt.plot(X[:, 0], X[:, 1])
-    # plt.title('Phase Portrait of state variables')  # Title of the plot
-    # plt.xlabel('State Variables')  # Label for the x-axis
-    # plt.ylabel('State Variables')  # Label for the y-axis
-    # plt.legend()  # Show legend to label the lines
-    # plt.grid(True)  # Show grid lines for better readability
-    # plt.show()  # Display the plot
+
     n_vars = X.shape[1] 
     if n_vars == 2:
         plt.figure(figsize=(8, 6))

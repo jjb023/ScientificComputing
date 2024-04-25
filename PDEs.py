@@ -54,10 +54,6 @@ def maxdt(D, dx):
     return dt
 
 
-
-
-
-# Explicit Euler function for Partial Differential Equations
 def explicit_euler(N, D, alpha, beta, a, b, dt, dx,  T, xint, IC):
     """
     Solves the 1D diffusion equation using the explicit Euler method.
@@ -112,7 +108,6 @@ def explicit_euler(N, D, alpha, beta, a, b, dt, dx,  T, xint, IC):
 
     return u, t
 
-# Use numpys linalg.solve to solve the linear system of equations
 def implicit_euler(N, D, alpha, beta, a, b, dt, dx, T, xint, IC):
     """
     Solves the 1D diffusion equation using the implicit Euler method.
@@ -191,6 +186,42 @@ def diffusionIC(xint, b):
     IC = 0.5 * xint * (b - xint)
     return IC
 
+def convection_matrix(N, P, dx, scheme='upwind'):
+
+    C = np.zeros((N, N))
+
+
+    if scheme == 'upwind':
+        for i in range(1, N-1):  
+            C[i, i] = -P / dx
+            C[i, i-1] = P / dx
+    elif scheme == 'central':
+        for i in range(1, N-1):  
+            C[i, i+1] = P / (2 * dx)
+            C[i, i-1] = -P / (2 * dx)
+
+    C[0, 0] = 1
+    C[0, 1] = 0
+
+    C[-1, -1] = 1
+    C[-1, -2] = 0
+
+    return C
+
+
+def solve_reaction_convection_diffusion(N, P):
+    x, dx, xint = xgrid(N, 0, 1)  
+    D = P
+    dt = maxdt(D, dx) 
+    IC = np.zeros_like(xint) 
+    T = 1
+
+    A = Nmatrix(N, D) + convection_matrix(N, P, dx)
+
+    u, t = explicit_euler(N, D, 0, 0.5, 0, 1, dt, dx, T, xint, IC)
+    return u, t, xint
+
+
 def plot_pde(expu, impu, expt, impt):
     """
     Plot the solution to the 1D diffusion equation using the explicit Euler method.
@@ -202,7 +233,7 @@ def plot_pde(expu, impu, expt, impt):
     t : np.array
         Time points.
     """
-        # change size of the individual points
+       
     plt.plot(expt, expu, 'o', markersize=2, label='Explicit Euler')
     plt.plot(impt, impu, 'o', markersize=1, label='Implicit Euler')
     plt.xlabel('Time')
